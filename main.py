@@ -1,8 +1,12 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import filedialog
 
-def pencil_sketch(image_path, color=True, blur_kernel=21):
+
+
+def pencil_sketch(image_path, color, blur_kernel=21):
     img = cv.imread(image_path)
 
     if img is None:
@@ -24,8 +28,7 @@ def pencil_sketch(image_path, color=True, blur_kernel=21):
         sketched_v = np.clip(sketched_v, 0, 255)
         sketched_v = cv.convertScaleAbs(sketched_v)
 
-        # Combine channels with slight desaturation
-        # Ensure all channels have the same size
+
         h_resized = cv.resize(h, (sketched_v.shape[1], sketched_v.shape[0]))
         s_resized = cv.resize((s * 0.9).astype(np.uint8), (sketched_v.shape[1], sketched_v.shape[0]))
         sketched_img = cv.merge((h_resized, s_resized, sketched_v))
@@ -47,9 +50,9 @@ def pencil_sketch(image_path, color=True, blur_kernel=21):
 
 
 
-def display_result(original, sketch, color, save_path=None):
 
-    _, (orig_plot, sketch_plot) = plt.subplots(ncols=2)
+def display_result(original, sketch, color, save_path=None):
+    fig, (orig_plot, sketch_plot) = plt.subplots(ncols=2, figsize=(10, 5))
     if not color:
         sketch_temp = cv.cvtColor(sketch, cv.COLOR_GRAY2RGB)
     else:
@@ -68,17 +71,100 @@ def display_result(original, sketch, color, save_path=None):
 
     if save_path:
         cv.imwrite(save_path, sketch)
+
+
+
+def select_file():    
+    filetypes = (
+        ('Images', '*.jpg'),
+        ('All files', '*.*')
+    )
+
+    global filepath
+    filepath = filedialog.askopenfilename(
+        title='Select a file...',
+        initialdir='/',
+        filetypes=filetypes
+    )
+
+    if not filepath:
+        print("File selection cancelled.")
+
+
+
+
+def colored_sketch_button():
+    try:
+        global blur_kernel, color
+        color = True
+        if entry.get()!='':
+            blur_kernel = int(entry.get())
+        root.destroy()
+    except Exception as e:
+        print(f"Error: {e}")
+def grayscale_sketch_button():
+    try:
+        global blur_kernel, color
+        color = False
+        if entry.get()!='':
+            blur_kernel = int(entry.get())
+        
+        root.destroy()
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+
+
+def gui_inititalize():
+    global root, entry
+    root = tk.Tk()
+    root.title("File Picker GUI")
+    root.geometry("300x400")
     
+    label = tk.Label(root, text="Click the button to open the file dialog.")
+    label.pack(pady=20)
     
+    open_button = tk.Button(root, text="Open File", command=select_file)
+    open_button.pack(pady=10)
+
+    label = tk.Label(root, text="Do you want a coloured sketch or a greyscale sketch?")
+    label.pack(pady=20)
+
+    tk.Label(root, text="Enter value of blur kernel (Leave empty for default):").pack(pady=5)
+    entry = tk.Entry(root)
+    entry.pack(pady=5)
+
+    tk.Label(root, text="Do you want a coloured sketch?").pack(pady=20)
+
+    button_frame = tk.Frame(root)
+    button_frame.pack(pady=10)
+
+    yes_button = tk.Button(button_frame, text="Yes", command=colored_sketch_button)
+    
+    yes_button.pack(side=tk.LEFT, padx=5)
+
+    no_button = tk.Button(button_frame, text="No", command=grayscale_sketch_button)
+    
+    no_button.pack(side=tk.LEFT, padx=5)
+    root.mainloop()
+
+
 
 def main():
-    image_path = 'test_images/sample2.jpg'
-    color = True
-    sketch, original = pencil_sketch(image_path, color=color, blur_kernel=21)
-    if sketch is None:
-        pass
+    global filepath, color, blur_kernel
+    filepath = ""
+    blur_kernel = 21
+    color = False
+    gui_inititalize()
+    if filepath!="":
+        sketch, original = pencil_sketch(filepath, color=color, blur_kernel=blur_kernel)
+        if sketch is None:
+            pass
+        else:
+            display_result(original, sketch, color=color, save_path=f'./output_sketches/{filepath.split("/")[-1].split(".")[0]}_sketch.png')
     else:
-        display_result(original, sketch, color=color, save_path=f'./output_sketches/{image_path.split("/")[-1].split(".")[0]}_sketch.png')
+        print("No file selected. Exiting program.")
 
 if __name__=="__main__":
     main()
