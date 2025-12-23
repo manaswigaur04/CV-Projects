@@ -9,6 +9,17 @@ import os
 
 
 def pencil_sketch(image_path, color, blur_kernel=21):
+    """
+    Apply pencil sketch effect to an image.
+    
+    Args:
+        image_path (str): Path to the input image.
+        color (bool): If True, apply colored sketch; if False, apply grayscale sketch.
+        blur_kernel (int): Kernel size for Gaussian blur (default: 21).
+    
+    Returns:
+        tuple: (sketched_image, original_image) or (None, None) if loading fails.
+    """
     if color:
         pencil_sketch, img = pencil_sketch_color(image_path, blur_kernel=blur_kernel)
         return pencil_sketch, img
@@ -19,6 +30,15 @@ def pencil_sketch(image_path, color, blur_kernel=21):
 
 
 def load_file(image_path):
+    """
+    Load an image from the specified file path.
+    
+    Args:
+        image_path (str): Path to the image file.
+    
+    Returns:
+        numpy.ndarray: Image as a uint8 array, or None if loading fails.
+    """
     try:
         img = cv.imread(image_path).astype(np.uint8)
     except AttributeError as e:
@@ -35,7 +55,16 @@ def load_file(image_path):
     return img
 
 def pencil_sketch_grayscale(image_path, blur_kernel=21):
+    """
+    Apply grayscale pencil sketch effect to an image.
     
+    Args:
+        image_path (str): Path to the input image.
+        blur_kernel (int): Kernel size for Gaussian blur (default: 21).
+    
+    Returns:
+        tuple: (sketched_image, original_image) or (None, None) if loading fails.
+    """
     img = load_file(image_path)
     if img is None:
         return(None, None)
@@ -53,6 +82,16 @@ def pencil_sketch_grayscale(image_path, blur_kernel=21):
 
 
 def pencil_sketch_color(image_path, blur_kernel=21):
+    """
+    Apply colored pencil sketch effect to an image.
+    
+    Args:
+        image_path (str): Path to the input image.
+        blur_kernel (int): Kernel size for Gaussian blur (default: 21).
+    
+    Returns:
+        tuple: (sketched_image, original_image) or (None, None) if loading fails.
+    """
     img = load_file(image_path)
     if img is None:
         return(None, None)
@@ -82,6 +121,15 @@ def pencil_sketch_color(image_path, blur_kernel=21):
 
 
 def display_result(original, sketch, color, save_path=None):
+    """
+    Display original and sketched images side by side, optionally saving the result.
+    
+    Args:
+        original (numpy.ndarray): Original image in BGR format.
+        sketch (numpy.ndarray): Sketched image (BGR if colored, grayscale if not).
+        color (bool): If True, sketch is in BGR format; if False, grayscale.
+        save_path (str, optional): Path to save the sketched image (default: None).
+    """
     fig, (orig_plot, sketch_plot) = plt.subplots(ncols=2, figsize=(10, 5))
     if not color:
         sketch_temp = cv.cvtColor(sketch, cv.COLOR_GRAY2RGB)
@@ -106,19 +154,32 @@ def display_result(original, sketch, color, save_path=None):
 CONFIG_FILE = '.last_dir.txt' # A hidden file is a good choice
 
 def get_last_dir():
-    """Reads the last directory from a config file, defaults to home if not found."""
+    """
+    Read the last accessed directory from config file.
+    
+    Returns:
+        str: Last directory path, or user home directory if file not found.
+    """
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'r') as f:
             return f.read().strip()
     return os.path.expanduser("~")
 
 def save_last_dir(directory):
-    """Saves the directory to the config file."""
+    """
+    Save the current directory to config file.
+    
+    Args:
+        directory (str): Directory path to save.
+    """
     with open(CONFIG_FILE, 'w') as f:
         f.write(directory)
 
 
 def select_file():    
+    """
+    Open file dialog for user to select an image file and save the selection.
+    """
     filetypes = (
         ('Images', '*.jpg'),
         ('Images', '*.png'),
@@ -143,14 +204,19 @@ def select_file():
 
 
 def toggle_color():
+    """Toggle the color flag for sketch effect."""
     global color
     color = not color
 
 def toggle_save():
+    """Toggle the save flag for output image."""
     global save
     save = not save
 
 def proceed():
+    """
+    Validate inputs and close the GUI window to proceed with sketch generation.
+    """
     global blur_kernel
     if filepath=="":
         error_label.config(text="No file selected. Please select a file first.")
@@ -168,6 +234,10 @@ def proceed():
 
 
 def gui_inititalize():
+    """
+    Initialize and display the GUI window with controls for file selection,
+    blur kernel input, and sketch options.
+    """
     global root, entry, color, error_label
     root = ttk.Window(themename="superhero")
     root.title("Pencil Sketch Effect")
@@ -211,6 +281,9 @@ def gui_inititalize():
 
 
 def main():
+    """
+    Main entry point: initialize GUI, process user selections, and generate pencil sketch.
+    """
     global filepath, color, blur_kernel, save
     filepath = ""
     blur_kernel = 21
