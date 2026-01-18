@@ -1,5 +1,5 @@
 Manaswi Gaur
-Final Test Accuracy: 99.07 (98.54% without fine tuning)
+Final Test Accuracy: 99.07% (98.54% without fine tuning)
 Data augmentation techniques used: 
 - Resize(256)
 - RandomCrop(224)
@@ -11,4 +11,8 @@ Data augmentation techniques used:
 Learning rate schedule used - torch.optim.lr_scheduler.ReduceLROnPlateau
 Bonus Challenges Attempted: 
 - Bonus 1: Fine-tuning
+- Bonus 2: Try Different Architectures
+    - ResNet18 Accuracy: 98.09%
+    - MobileNetV2 Accuracy: 97.68%
+    - Result: ResNet18 performs better by 0.41%
 - Bonus 3: Visualize Predictions
