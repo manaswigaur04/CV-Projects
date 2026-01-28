@@ -19,7 +19,7 @@ def main():
     img2_keypoints, img2_descriptors = orb.detectAndCompute(img2_bw, None)
 
     if img1_descriptors is None or img2_descriptors is None:
-        print("No descriptors found!")
+        print("No descriptors could be found!")
         return
 
     matcher = cv.BFMatcher()
@@ -28,13 +28,13 @@ def main():
 
     good_matches = matches[:50]
 
-    print(f"Found {len(matches)} total matches.")
+    print(f"{len(matches)} total matches found.")
 
     output_img = cv.drawMatches(img1, img1_keypoints, img2, img2_keypoints, good_matches, None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
     plt.figure(figsize=(12, 6))
     plt.imshow(cv.cvtColor(output_img, cv.COLOR_BGR2RGB))
-    plt.title('ORB Feature Matching')
+    plt.title('Feature Matching(ORB - Top 50)')
     plt.annotate('Image 1', xy=(0.25, 0.95), xycoords='axes fraction', fontsize=12, ha='center')
     plt.annotate('Image 2', xy=(0.75, 0.95), xycoords='axes fraction', fontsize=12, ha='center')
     plt.annotate(f"Total Matches: {len(matches)}", xy=(0.5, 0.05), xycoords='axes fraction', fontsize=12, ha='center')
@@ -45,3 +45,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    print("Finished Matching Features")

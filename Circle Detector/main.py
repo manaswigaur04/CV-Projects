@@ -51,12 +51,14 @@ def detect_circles():
             maxRadius=100
         )
 
-        circle_count = len(circles)
-        total_radius = sum(circles[0, :][2])
+        
         
         output_img = img.copy()
 
         if circles is not None:
+            circle_count = len(circles)
+            if circles.shape[1] == 3:
+                total_radius = sum(circles[0, :][2])
             circles = np.uint16(np.around(circles))
             
             for i in circles[0, :]:
@@ -71,7 +73,7 @@ def detect_circles():
 
         
         print(f"  Circles detected: {circle_count}")
-        if circle_count > 0:
+        if circles.shape[1] == 3:
             avg_radius = total_radius / circle_count
             print(f"  Average radius: {avg_radius:.2f} pixels")
 
